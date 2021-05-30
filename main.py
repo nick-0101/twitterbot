@@ -28,17 +28,7 @@ twitter_api = tweepy.API(auth, wait_on_rate_limit=True,
 #   Check for new tweets
 # #
 
-# 1. First check last 100 followers from sephora & other accounts.
-# 2. Follow all the accounts
-# 3. Filter tweets based on hashtags like #beauty, #cosmetics
-# 4. Like every tweet and comment "This look beautiful!"
-# Once bot has liked & commented on about 500 tweets
-
-
 def fetchTweets(twitter_api):
-    # Define vars
-    twitterUser = ''
-
     # Fetch x amount of tweets and loop through them
     for tweet in tweepy.Cursor(
         twitter_api.search,
@@ -46,22 +36,29 @@ def fetchTweets(twitter_api):
         rpp=100
     ).items(MAX_TWEETS):
         try:
-            # Current tweets poster username
-            twitterUser = tweet.user.screen_name
+            # Current tweets poster username & if tweet is liked
+            status = twitter_api.get_status(tweet.id)
+            favorited = status.favorited
 
-            # Tweet reply
-            tweet_reply = 'check out glitzher.com!'
+            # Check if tweet liked or not
+            if favorited == True:
+                pass
+            else:
+                # Tweet reply
+                tweet_reply = 'Check out glitzher.com!'
 
-            # Like each tweet
-            print(f"Liking tweet {tweet.id} of {twitterUser}")
-            twitter_api.create_favorite(tweet.id)
+                # Like each tweet
+                twitter_api.create_favorite(tweet.id)
 
-            # Reply to each tweet
-            twitter_api.update_status(
-                status=tweet_reply, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True)
+                # Reply to each tweet
+                twitter_api.update_status(
+                    status=tweet_reply, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True)
 
-            # Confirmation Success
-            print('Successfully liked and commented!')
+                # Confirmation Success
+                print('Successfully liked and commented!')
+
+                # Delay program to not get blocked by twitter
+                time.sleep(55)
 
         except tweepy.TweepError as e:
             print(e.reason)
@@ -69,23 +66,30 @@ def fetchTweets(twitter_api):
             break
 
 
-fetchTweets(twitter_api)
+def direct_message_checker(twitter_api):
+    messages = twitter_api.list_direct_messages(count=5)
+
+    for message in messages:
+        # Reply
+        reply = 'Hello! Thank you for contacting Glitzher. I\'m a bot but to get in contact with the admin of Glitzher please send a direct message to them on instagram: @glitzher_official'
+
+        # Get recent dm & sender id
+        text = message.message_create["message_data"]["text"]
+        sender_id = message.message_create["sender_id"]
+
+        # Respond to direct messgae
+        twitter_api.send_direct_message(sender_id, reply)
+
+        # remove DM
+        twitter_api.destroy_direct_message(
+            message.id)
 
 
-# def followUsersFromBigAccounts(twitter_api):
-#     # Define vars
-#     twitterUsers = ['beautydealsbff', 'Sephora']
+if __name__ == '__main__':
+    fetchTweets(twitter_api)
 
-#     # For each follower of twitterUser, follow them
-#     for user in twitterUsers:
-#         for follower in twitter_api.followers(user):
-#             time.sleep(3)
-#             # Skip my account
-#             if follower.screen_name == 'GlitzherBrand':
-#                 pass
-#             else:
-#                 twitter_api.create_friendship(follower.screen_name)
-#                 print('Followed :', follower.screen_name)
+    # schedule.every(10).seconds.do(direct_message_checker, twitter_api)
 
-
-# followUsersFromBigAccounts(twitter_api)
+    # while 1:
+    #     schedule.run_pending()
+    #     time.sleep(1)
