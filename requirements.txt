@@ -1,0 +1,4 @@
+schedule==1.1.0
+python-dotenv==0.17.1
+tweepy==3.10.0
+dateparser==1.0.0

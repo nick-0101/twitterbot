@@ -85,6 +85,7 @@ def direct_message_checker(twitter_api):
 
 
 if __name__ == '__main__':
+    print('Startup successful')
     # Every 10 minutes check for messages
     schedule.every(10).minutes.do(direct_message_checker, twitter_api)
 
