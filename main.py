@@ -91,8 +91,8 @@ if __name__ == '__main__':
 
     # Every day at these times run fetchTweets
     schedule.every().day.at("12:30").do(fetchTweets, twitter_api)
-    schedule.every().day.at("1:30").do(fetchTweets, twitter_api)
-    schedule.every().day.at("4:30").do(fetchTweets, twitter_api)
+    schedule.every().day.at("13:30").do(fetchTweets, twitter_api)
+    schedule.every().day.at("16:30").do(fetchTweets, twitter_api)
 
     while 1:
         schedule.run_pending()
