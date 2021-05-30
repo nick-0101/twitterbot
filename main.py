@@ -1,4 +1,5 @@
 import os
+import sys
 import schedule
 import time
 from dotenv import load_dotenv
@@ -7,6 +8,7 @@ import tweepy
 load_dotenv()
 
 MAX_TWEETS = 1
+keyword = 'cosmetic' or 'beauty' or 'deals' or 'beauty sale'
 # 5000000000000000000000
 
 # Api Keys
@@ -38,14 +40,28 @@ def fetchTweets(twitter_api):
     twitterUser = ''
 
     # Fetch x amount of tweets and loop through them
-    for tweet in tweepy.Cursor(twitter_api.search, q='#beauty', rpp=100).items(MAX_TWEETS):
+    for tweet in tweepy.Cursor(
+        twitter_api.search,
+        q=('cosmetics OR beauty OR beauty sale OR deals OR beauty deals'),
+        rpp=100
+    ).items(MAX_TWEETS):
         try:
             # Current tweets poster username
             twitterUser = tweet.user.screen_name
 
-            # For each follower of twitterUser, follow them
-            for follower in twitter_api.followers(twitterUser):
-                print(follower.screen_name)
+            # Tweet reply
+            tweet_reply = 'check out glitzher.com!'
+
+            # Like each tweet
+            print(f"Liking tweet {tweet.id} of {twitterUser}")
+            twitter_api.create_favorite(tweet.id)
+
+            # Reply to each tweet
+            twitter_api.update_status(
+                status=tweet_reply, in_reply_to_status_id=tweet.id, auto_populate_reply_metadata=True)
+
+            # Confirmation Success
+            print('Successfully liked and commented!')
 
         except tweepy.TweepError as e:
             print(e.reason)
@@ -53,23 +69,23 @@ def fetchTweets(twitter_api):
             break
 
 
-# fetchTweets(twitter_api)
+fetchTweets(twitter_api)
 
 
-def followUsersFromBigAccounts(twitter_api):
-    # Define vars
-    twitterUsers = ['beautydealsbff', 'Sephora']
+# def followUsersFromBigAccounts(twitter_api):
+#     # Define vars
+#     twitterUsers = ['beautydealsbff', 'Sephora']
 
-    # For each follower of twitterUser, follow them
-    for user in twitterUsers:
-        for follower in twitter_api.followers(user):
-            time.sleep(3)
-            # Skip my account
-            if follower.screen_name == 'GlitzherBrand':
-                pass
-            else:
-                twitter_api.create_friendship(follower.screen_name)
-                print('Followed :', follower.screen_name)
+#     # For each follower of twitterUser, follow them
+#     for user in twitterUsers:
+#         for follower in twitter_api.followers(user):
+#             time.sleep(3)
+#             # Skip my account
+#             if follower.screen_name == 'GlitzherBrand':
+#                 pass
+#             else:
+#                 twitter_api.create_friendship(follower.screen_name)
+#                 print('Followed :', follower.screen_name)
 
 
-followUsersFromBigAccounts(twitter_api)
+# followUsersFromBigAccounts(twitter_api)
