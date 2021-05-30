@@ -39,14 +39,37 @@ def fetchTweets(twitter_api):
 
     # Fetch x amount of tweets and loop through them
     for tweet in tweepy.Cursor(twitter_api.search, q='#beauty', rpp=100).items(MAX_TWEETS):
-        # Current tweets poster username
-        twitterUser = tweet.user.screen_name
+        try:
+            # Current tweets poster username
+            twitterUser = tweet.user.screen_name
 
-        # For each follower of twitterUser, follow them
-        for follower in twitter_api.followers(twitterUser):
-            print(follower.screen_name)
+            # For each follower of twitterUser, follow them
+            for follower in twitter_api.followers(twitterUser):
+                print(follower.screen_name)
 
-        pass
+        except tweepy.TweepError as e:
+            print(e.reason)
+        except StopIteration:
+            break
 
 
-fetchTweets(twitter_api)
+# fetchTweets(twitter_api)
+
+
+def followUsersFromBigAccounts(twitter_api):
+    # Define vars
+    twitterUsers = ['beautydealsbff', 'Sephora']
+
+    # For each follower of twitterUser, follow them
+    for user in twitterUsers:
+        for follower in twitter_api.followers(user):
+            time.sleep(3)
+            # Skip my account
+            if follower.screen_name == 'GlitzherBrand':
+                pass
+            else:
+                twitter_api.create_friendship(follower.screen_name)
+                print('Followed :', follower.screen_name)
+
+
+followUsersFromBigAccounts(twitter_api)
