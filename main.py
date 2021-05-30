@@ -7,9 +7,8 @@ import tweepy
 
 load_dotenv()
 
-MAX_TWEETS = 1
+MAX_TWEETS = 100
 keyword = 'cosmetic' or 'beauty' or 'deals' or 'beauty sale'
-# 5000000000000000000000
 
 # Api Keys
 twitter_api_key = os.getenv('CONSUMER_KEY')
@@ -32,7 +31,7 @@ def fetchTweets(twitter_api):
     # Fetch x amount of tweets and loop through them
     for tweet in tweepy.Cursor(
         twitter_api.search,
-        q=('cosmetics OR beauty OR beauty sale OR deals OR beauty deals'),
+        q=('cosmetics OR beauty OR beauty sale OR deals OR beauty deals OR Canada OR canadian'),
         rpp=100
     ).items(MAX_TWEETS):
         try:
@@ -45,7 +44,7 @@ def fetchTweets(twitter_api):
                 pass
             else:
                 # Tweet reply
-                tweet_reply = 'Check out glitzher.com!'
+                tweet_reply = 'Compare Canadian cosmetic prices across major retailers at glitzher.com'
 
                 # Like each tweet
                 twitter_api.create_favorite(tweet.id)
@@ -86,10 +85,14 @@ def direct_message_checker(twitter_api):
 
 
 if __name__ == '__main__':
-    fetchTweets(twitter_api)
+    # Every 10 minutes check for messages
+    schedule.every(10).minutes.do(direct_message_checker, twitter_api)
 
-    # schedule.every(10).seconds.do(direct_message_checker, twitter_api)
+    # Every day at these times run fetchTweets
+    schedule.every().day.at("12:30").do(fetchTweets, twitter_api)
+    schedule.every().day.at("1:30").do(fetchTweets, twitter_api)
+    schedule.every().day.at("4:30").do(fetchTweets, twitter_api)
 
-    # while 1:
-    #     schedule.run_pending()
-    #     time.sleep(1)
+    while 1:
+        schedule.run_pending()
+        time.sleep(1)
