@@ -92,7 +92,7 @@ def job():
 if __name__ == '__main__':
     print('Startup successful')
     # Every 10 minutes check for messages
-    schedule.every(1).minutes.do(direct_message_checker, twitter_api)
+    schedule.every(10).minutes.do(direct_message_checker, twitter_api)
 
     # Every day at these times run fetchTweets
     schedule.every().day.at("12:30").do(fetchTweets, twitter_api)
