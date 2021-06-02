@@ -31,7 +31,7 @@ def fetchTweets(twitter_api):
     # Fetch x amount of tweets and loop through them
     for tweet in tweepy.Cursor(
         twitter_api.search,
-        q=('cosmetics OR beauty sale OR beauty sale OR beauty deals OR cosmetic sale OR cosmetic sales or beauty deal'),
+        q=('beauty sale'),
         rpp=100
     ).items(MAX_TWEETS):
         try:
@@ -57,7 +57,7 @@ def fetchTweets(twitter_api):
                 print('Successfully liked and commented!')
 
                 # Delay program to not get blocked by twitter
-                time.sleep(55)
+                # time.sleep(55)
 
         except tweepy.TweepError as e:
             print(e.reason)
@@ -85,12 +85,9 @@ def direct_message_checker(twitter_api):
             message.id)
 
 
-def job():
-    print('hello!')
-
-
 if __name__ == '__main__':
     print('Startup successful')
+
     # Every 10 minutes check for messages
     schedule.every(10).minutes.do(direct_message_checker, twitter_api)
 
