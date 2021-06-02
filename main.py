@@ -57,7 +57,7 @@ def fetchTweets(twitter_api):
                 print('Successfully liked and commented!')
 
                 # Delay program to not get blocked by twitter
-                # time.sleep(55)
+                time.sleep(55)
 
         except tweepy.TweepError as e:
             print(e.reason)
