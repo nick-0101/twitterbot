@@ -31,7 +31,7 @@ def fetchTweets(twitter_api):
     # Fetch x amount of tweets and loop through them
     for tweet in tweepy.Cursor(
         twitter_api.search,
-        q=('beauty sale'),
+        q=('cosmetic OR cosmetics'),
         rpp=100
     ).items(MAX_TWEETS):
         try:
